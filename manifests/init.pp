@@ -10,16 +10,10 @@ class pacemaker(
   $service       = 'running',
   $onboot        = true,
   $package       = 'installed',
-  $manage_cib    = false,
+  $bindnetaddr   = params_lookup('bindnetaddr'),
+  $mcastaddr     = params_lookup('mcastaddr'),
+  $mcastport     = params_lookup('mcastport'),
   $service_delay = 0,
-  $bindnetaddr   = undef,
-  $mcastaddr     = undef,
-  $mcastport     = 5410,
-  $debug_logging = 'off',
-  $crm_config    = undef,
-  $nodes         = undef,
-  $resources     = undef,
-  $constraints   = undef,
 ) {
   case $::osfamily {
     Debian: {
@@ -40,12 +34,8 @@ class pacemaker(
   $config_file            = '/etc/corosync/corosync.conf'
   $conf_template          = 'corosync.conf.erb'
 
-  $cib_xml_file           = '/etc/corosync/cib_config.xml'
-  $cib_xml_template       = 'cib_config.xml.erb'
-
   $default_file           = '/etc/default/corosync'
   $default_file_template  = 'corosync.default.erb'
-  $init_script            = '/etc/init.d/corosync'
 
   if $bindnetaddr == undef {
     fail('Please specify bindnetaddr.')
@@ -53,10 +43,6 @@ class pacemaker(
 
   if $mcastaddr == undef {
     fail('Please specify mcastaddr.')
-  }
-
-  if $nodes == undef {
-    fail('Please specify at least one node of your cluster.')
   }
 
   package { $package_name:
@@ -107,42 +93,6 @@ class pacemaker(
       mode    => '0644',
       content => template("${module_name}/${default_file_template}"),
       require => Package[$package_name],
-    }
-
-    file { $init_script:
-      ensure => file,
-      owner  => 'root',
-      group  => 'root',
-      mode   => '0755',
-      source => "puppet:///modules/${module_name}/corosync.init",
-      before => Service[$service_name],
-    }
-  }
-
-  if $manage_cib {
-    file { $cib_xml_file:
-      ensure  => file,
-      owner   => 'root',
-      group   => 'root',
-      mode    => '0644',
-      content => template("${module_name}/${cib_xml_template}"),
-      notify  => Exec['crm_verify_cib_xml_file'],
-      require => Service[$service_name],
-    }
-
-    exec { 'crm_verify_cib_xml_file':
-      path        => '/bin:/usr/sbin:/usr/bin',
-      command     => "crm_verify --xml-file ${cib_xml_file}",
-      refreshonly => true,
-      notify      => Exec['cibadmin_apply_cib_xml_file'],
-    }
-
-    exec { 'cibadmin_apply_cib_xml_file':
-      path        => '/bin:/usr/sbin:/usr/bin',
-      command     => "crm_attribute --type crm_config --query --name \
-                      dc-version || sleep 10s && cibadmin --replace \
-                      --scope configuration --xml-file ${cib_xml_file}",
-      refreshonly => true,
     }
   }
 }

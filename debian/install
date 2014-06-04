@@ -1,0 +1,4 @@
+manifests   etc/puppet/modules/pacemaker
+templates   etc/puppet/modules/pacemaker
+README*     usr/share/doc/puppet-module-pacemaker
+

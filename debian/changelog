@@ -1,0 +1,5 @@
+puppet-module-pacemaker (1.0.1) UNRELEASED; urgency=low
+
+  * Initial release.
+
+ -- Damian Lukowski <damian.lukowski@credativ.de>  Wed, 04 Jun 2014 16:51:39 +0200
