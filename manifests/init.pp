@@ -1,4 +1,4 @@
-# == Class: pacemaker
+# == Class: nfs-pacemaker
 #
 # See README.md
 #
@@ -6,7 +6,7 @@
 #
 # - Vaidas Jablonskis <jablonskis@gmail.com>
 #
-class pacemaker(
+class nfs-pacemaker (
   $service       = 'running',
   $onboot        = true,
   $package       = 'installed',
@@ -50,6 +50,10 @@ class pacemaker(
   }
 
   package { $pacemaker_package_name:
+    ensure  => installed,
+  }
+
+  package { 'psmisc':
     ensure  => installed,
   }
 

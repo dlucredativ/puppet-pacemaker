@@ -1,11 +1,11 @@
-Source: puppet-module-pacemaker
+Source: puppet-module-nfs-pacemaker
 Section: admin
 Priority: optional
 Maintainer: Damian Lukowski <damian.lukowski@credativ.de>
 Build-Depends: debhelper (>= 7)
 Standards-Version: 3.9.5
 
-Package: puppet-module-pacemaker
+Package: puppet-module-nfs-pacemaker
 Architecture: all
 Depends: ${misc:Depends}
-Description: puppet module pacemaker
+Description: puppet module nfs-pacemaker

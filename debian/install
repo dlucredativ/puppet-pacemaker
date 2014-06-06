@@ -1,4 +1,3 @@
-manifests   etc/puppet/modules/pacemaker
-templates   etc/puppet/modules/pacemaker
-README*     usr/share/doc/puppet-module-pacemaker
-
+manifests   etc/puppet/modules/nfs-pacemaker
+templates   etc/puppet/modules/nfs-pacemaker
+README*     usr/share/doc/puppet-module-nfs-pacemaker
