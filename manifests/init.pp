@@ -13,6 +13,7 @@ class nfs-pacemaker (
   $bindnetaddr   = params_lookup('bindnetaddr'),
   $mcastaddr     = params_lookup('mcastaddr'),
   $mcastport     = params_lookup('mcastport'),
+  $sbd_device    = params_lookup('sbd_device'),
   $service_delay = 0,
 ) {
   case $::osfamily {
@@ -36,6 +37,11 @@ class nfs-pacemaker (
 
   $default_file           = '/etc/default/corosync'
   $default_file_template  = 'corosync.default.erb'
+
+  $sbd_initscript         = '/etc/init.d/pacemaker-sbd'
+  $sbd_rcfile             = '/etc/rc2.d/S02pacemaker-sbd'
+  $sbd_initscript_tpl     = 'pacemaker-sbd.erb'
+
 
   if $bindnetaddr == undef {
     fail('Please specify bindnetaddr.')
@@ -87,6 +93,19 @@ class nfs-pacemaker (
     content => template("${module_name}/${pcmk_service_template}"),
     notify  => Service[$service_name],
     require => Package[$package_name],
+  }
+
+  file { $sbd_initscript:
+    ensure  => file,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0755',
+    content => template("${module_name}/${sbd_initscript_tpl}"),
+  }
+
+  file { $sbd_rcfile:
+    ensure  => link,
+    target  => $sbd_initscript,
   }
 
   if $::osfamily == 'Debian' {
