@@ -2,7 +2,7 @@
 #
 ### BEGIN INIT INFO
 # Provides:          corosync
-# Required-Start:    $network $remote_fs $syslog $pacemaker_sbd
+# Required-Start:    $network $remote_fs $syslog $<%= sbd_watchdog %>
 # Required-Stop:     $network $remote_fs $syslog
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6

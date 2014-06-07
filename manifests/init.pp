@@ -32,7 +32,7 @@ class nfs-pacemaker (
   $pcmk_service_template  = 'pacemaker.erb'
 
   $corosync_initscript    = '/etc/init.d/corosync'
-  $corosync_init_tpl      = 'corosync'
+  $corosync_init_tpl      = 'corosync.erb'
 
   $config_file            = '/etc/corosync/corosync.conf'
   $conf_template          = 'corosync.conf.erb'
@@ -40,9 +40,9 @@ class nfs-pacemaker (
   $default_file           = '/etc/default/corosync'
   $default_file_template  = 'corosync.default.erb'
 
-  $sbd_initscript         = '/etc/init.d/pacemaker-sbd'
-  $sbd_rcfile             = '/etc/rc2.d/S02pacemaker-sbd'
-  $sbd_initscript_tpl     = 'pacemaker-sbd.erb'
+  $sbd_watchdog           = 'pacemaker-sbd'
+  $sbd_watchdog_inittpl   = 'pacemaker-sbd.erb'
+
 
 
   if $bindnetaddr == undef {
@@ -109,20 +109,20 @@ class nfs-pacemaker (
     owner   => 'root',
     group   => 'root',
     mode    => '0755',
-    source  => "puppet:///modules/${module_name}/${corosync_init_tpl}",
+    content  => template("${module_name}/${corosync_init_tpl}"),
   }
 
-  file { $sbd_initscript:
+  file { "/etc/init.d/${sbd_watchdog}":
     ensure  => file,
     owner   => 'root',
     group   => 'root',
     mode    => '0755',
-    content => template("${module_name}/${sbd_initscript_tpl}"),
+    content => template("${module_name}/${sbd_watchdog_inittpl}"),
   }
 
-  file { $sbd_rcfile:
-    ensure  => link,
-    target  => $sbd_initscript,
+  exec { "insserv_watchdog":
+    command => "/sbin/insserv ${sbd_watchdog}",
+    require => File["/etc/init.d/${sbd_watchdog}"],
   }
 
   if $::osfamily == 'Debian' {
