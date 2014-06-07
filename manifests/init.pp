@@ -7,7 +7,6 @@
 # - Vaidas Jablonskis <jablonskis@gmail.com>
 #
 class nfs-pacemaker (
-  $service       = 'running',
   $onboot        = true,
   $package       = 'installed',
   $bindnetaddr   = params_lookup('bindnetaddr'),
@@ -32,6 +31,9 @@ class nfs-pacemaker (
   $pcmk_service_file      = '/etc/corosync/service.d/pacemaker'
   $pcmk_service_template  = 'pacemaker.erb'
 
+  $corosync_initscript    = '/etc/init.d/corosync'
+  $corosync_init_tpl      = 'corosync'
+
   $config_file            = '/etc/corosync/corosync.conf'
   $conf_template          = 'corosync.conf.erb'
 
@@ -51,6 +53,14 @@ class nfs-pacemaker (
     fail('Please specify mcastaddr.')
   }
 
+  if $mcastport == undef {
+    fail('Please specify mcastport.')
+  }
+
+  if $sbd_device == undef {
+    fail('Please specify sbd_device.')
+  }
+
   package { $package_name:
     ensure  => $package,
   }
@@ -64,14 +74,13 @@ class nfs-pacemaker (
   }
 
   service { $service_name:
-    ensure     => $service,
     enable     => $onboot,
     hasrestart => true,
     hasstatus  => true,
     require    => [
                     File[$config_file],
                     File[$default_file],
-                    Package[$package_name]
+                    Package[$package_name],
                   ],
   }
 
@@ -93,6 +102,14 @@ class nfs-pacemaker (
     content => template("${module_name}/${pcmk_service_template}"),
     notify  => Service[$service_name],
     require => Package[$package_name],
+  }
+
+  file { $corosync_initscript:
+    ensure  => file,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0755',
+    source  => "puppet:///modules/${module_name}/${corosync_init_tpl}",
   }
 
   file { $sbd_initscript:
