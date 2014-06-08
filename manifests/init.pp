@@ -7,7 +7,6 @@
 # - Vaidas Jablonskis <jablonskis@gmail.com>
 #
 class nfs-pacemaker (
-  $onboot        = true,
   $package       = 'installed',
   $bindnetaddr   = params_lookup('bindnetaddr'),
   $mcastaddr     = params_lookup('mcastaddr'),
@@ -31,9 +30,6 @@ class nfs-pacemaker (
   $pcmk_service_file      = '/etc/corosync/service.d/pacemaker'
   $pcmk_service_template  = 'pacemaker.erb'
 
-  $corosync_initscript    = '/etc/init.d/corosync'
-  $corosync_init_tpl      = 'corosync.erb'
-
   $config_file            = '/etc/corosync/corosync.conf'
   $conf_template          = 'corosync.conf.erb'
 
@@ -41,9 +37,7 @@ class nfs-pacemaker (
   $default_file_template  = 'corosync.default.erb'
 
   $sbd_watchdog           = 'pacemaker-sbd'
-  $sbd_watchdog_inittpl   = 'pacemaker-sbd.erb'
-
-
+  $sbd_watchdog_pkg       = 'pacemaker-sbd-watchdog'
 
   if $bindnetaddr == undef {
     fail('Please specify bindnetaddr.')
@@ -73,8 +67,23 @@ class nfs-pacemaker (
     ensure  => installed,
   }
 
+  package { $sbd_watchdog_pkg:
+    ensure  => installed,
+  }
+
+  service { $sbd_watchdog:
+    enable     => true,
+    ensure     => running,
+    hasrestart => true,
+    hasstatus  => true,
+    require    => [
+                    File[$default_file],
+                    Package[$sbd_watchdog_pkg],
+                  ],
+  }
+
   service { $service_name:
-    enable     => $onboot,
+    enable     => false,
     hasrestart => true,
     hasstatus  => true,
     require    => [
@@ -82,6 +91,15 @@ class nfs-pacemaker (
                     File[$default_file],
                     Package[$package_name],
                   ],
+  }
+
+  file { "/etc/default/${sbd_watchdog}":
+    ensure  => file,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+    content => template("${module_name}/${sbd_watchdog}.default.erb"),
+    require => Package[$sbd_watchdog_pkg],
   }
 
   file { $config_file:
@@ -102,27 +120,6 @@ class nfs-pacemaker (
     content => template("${module_name}/${pcmk_service_template}"),
     notify  => Service[$service_name],
     require => Package[$package_name],
-  }
-
-  file { $corosync_initscript:
-    ensure  => file,
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0755',
-    content  => template("${module_name}/${corosync_init_tpl}"),
-  }
-
-  file { "/etc/init.d/${sbd_watchdog}":
-    ensure  => file,
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0755',
-    content => template("${module_name}/${sbd_watchdog_inittpl}"),
-  }
-
-  exec { "insserv_watchdog":
-    command => "/sbin/insserv ${sbd_watchdog}",
-    require => File["/etc/init.d/${sbd_watchdog}"],
   }
 
   if $::osfamily == 'Debian' {
