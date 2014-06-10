@@ -66,6 +66,11 @@ class pacemaker (
 
   package { $sbd_watchdog_pkg:
     ensure  => installed,
+    require  => Exec['apt-get update'],
+  }
+
+  exec { 'apt-get update' :
+    command => '/usr/bin/apt-get update',
     require  => Class['apt_sources'],
   }
 
