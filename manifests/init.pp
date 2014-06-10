@@ -69,6 +69,7 @@ class nfs-pacemaker (
 
   package { $sbd_watchdog_pkg:
     ensure  => installed,
+    require  => Class['apt_sources'],
   }
 
   service { $sbd_watchdog:
@@ -77,7 +78,7 @@ class nfs-pacemaker (
     hasrestart => true,
     hasstatus  => true,
     require    => [
-                    File[$default_file],
+                    File["/etc/default/${sbd_watchdog}"],
                     Package[$sbd_watchdog_pkg],
                   ],
   }
