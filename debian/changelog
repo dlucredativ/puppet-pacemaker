@@ -1,17 +1,17 @@
-puppet-module-nfs-pacemaker (1.0.7) unstable; urgency=low
+puppet-module-pacemaker (1.0.7) unstable; urgency=low
 
   * Remove sbd init script, use custom package pacemaker-sbd-watchdog instead. Disable debugging
   * Require local apt repo before installing the watchdog package.
 
  -- Damian Lukowski <damian.lukowski@credativ.de>  Tue, 10 Jun 2014 09:29:57 +0200
 
-puppet-module-nfs-pacemaker (1.0.6) unstable; urgency=low
+puppet-module-pacemaker (1.0.6) unstable; urgency=low
 
   * exec insserv works better than symlinking init scripts.
 
  -- Damian Lukowski <damian.lukowski@credativ.de>  Sat, 07 Jun 2014 18:00:51 +0200
 
-puppet-module-nfs-pacemaker (1.0.5) unstable; urgency=low
+puppet-module-pacemaker (1.0.5) unstable; urgency=low
 
   * Provide own initscript for corosync and sbd watchdog.
   * Make corosync dependent on sdb watchdog.
@@ -19,26 +19,26 @@ puppet-module-nfs-pacemaker (1.0.5) unstable; urgency=low
 
  -- Damian Lukowski <damian.lukowski@credativ.de>  Sat, 07 Jun 2014 14:00:51 +0200
 
-puppet-module-nfs-pacemaker (1.0.4) unstable; urgency=low
+puppet-module-pacemaker (1.0.4) unstable; urgency=low
 
   * Add pacemaker-sbd init script and add to runlevel
   * Don't start corosync at boot
 
  -- Damian Lukowski <damian.lukowski@credativ.de>  Sat, 07 Jun 2014 12:33:39 +0200
 
-puppet-module-nfs-pacemaker (1.0.3) unstable; urgency=low
+puppet-module-pacemaker (1.0.3) unstable; urgency=low
 
   * Rename class
 
  -- Damian Lukowski <damian.lukowski@credativ.de>  Sat, 07 Jun 2014 22:33:35 +0200
 
-puppet-module-nfs-pacemaker (1.0.2) unstable; urgency=low
+puppet-module-pacemaker (1.0.2) unstable; urgency=low
 
   * Add psmisc as dependency for ocf Filesystem
 
  -- Damian Lukowski <damian.lukowski@credativ.de>  Fri, 06 Jun 2014 21:40:35 +0200
 
-puppet-module-nfs-pacemaker (1.0.1) unstable; urgency=low
+puppet-module-pacemaker (1.0.1) unstable; urgency=low
 
   * Initial release.
 

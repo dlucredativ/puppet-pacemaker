@@ -1,16 +1,13 @@
-# == Class: nfs-pacemaker
+# == Class: pacemaker
 #
 # See README.md
 #
-# === Authors
-#
-# - Vaidas Jablonskis <jablonskis@gmail.com>
-#
-class nfs-pacemaker (
+class pacemaker (
   $package       = 'installed',
   $bindnetaddr   = params_lookup('bindnetaddr'),
   $mcastaddr     = params_lookup('mcastaddr'),
   $mcastport     = params_lookup('mcastport'),
+  $sbd_active    = params_lookup('sbd_active'),
   $sbd_device    = params_lookup('sbd_device'),
   $service_delay = 0,
 ) {
@@ -73,8 +70,8 @@ class nfs-pacemaker (
   }
 
   service { $sbd_watchdog:
-    enable     => true,
-    ensure     => running,
+    enable     => $sbd_active,
+    ensure     => $sbd_active,
     hasrestart => true,
     hasstatus  => true,
     require    => [
