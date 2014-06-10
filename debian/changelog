@@ -1,3 +1,10 @@
+puppet-module-nfs-pacemaker (1.0.7) unstable; urgency=low
+
+  * Remove sbd init script, use custom package pacemaker-sbd-watchdog instead. Disable debugging
+  * Require local apt repo before installing the watchdog package.
+
+ -- Damian Lukowski <damian.lukowski@credativ.de>  Tue, 10 Jun 2014 09:29:57 +0200
+
 puppet-module-nfs-pacemaker (1.0.6) unstable; urgency=low
 
   * exec insserv works better than symlinking init scripts.
