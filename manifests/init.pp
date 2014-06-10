@@ -9,6 +9,7 @@ class pacemaker (
   $mcastport     = params_lookup('mcastport'),
   $sbd_active    = params_lookup('sbd_active'),
   $sbd_device    = params_lookup('sbd_device'),
+  $authkey       = base64('decode', params_lookup('authkey')),
   $service_delay = 0,
 ) {
   case $::osfamily {
@@ -35,6 +36,12 @@ class pacemaker (
 
   $sbd_watchdog           = 'pacemaker-sbd'
   $sbd_watchdog_pkg       = 'pacemaker-sbd-watchdog'
+
+  $no_authkey = $authkey == ''
+  $secauth    = $no_authkey ? {
+    false => 'on',
+    true  => 'off',
+  }
 
   if $bindnetaddr == undef {
     fail('Please specify bindnetaddr.')
@@ -92,8 +99,18 @@ class pacemaker (
     require    => [
                     File[$config_file],
                     File[$default_file],
+                    File['/etc/corosync/authkey'],
                     Package[$package_name],
                   ],
+  }
+
+  file { "/etc/corosync/authkey":
+    ensure  => file,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+    content => $authkey,
+    require => Package[$package_name],
   }
 
   file { "/etc/default/${sbd_watchdog}":
